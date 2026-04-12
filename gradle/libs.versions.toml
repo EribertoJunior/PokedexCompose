@@ -1,6 +1,6 @@
 [versions]
-agp = "8.7.1"
-kotlin = "1.9.0"
+agp = "8.6.1"
+kotlin = "2.0.21"
 core-ktx = "1.13.1"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.2.1"
@@ -16,7 +16,7 @@ room = "2.6.1"
 coil = "2.2.2"
 koin-android = "3.4.2"
 koin-android-compose = "3.4.5"
-ksp = "1.9.10-1.0.13"
+ksp = "2.0.21-1.0.25"
 mockk = "1.13.2"
 
 [libraries]
@@ -85,4 +85,5 @@ okhttp = [
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kspRoom = {id = "com.google.devtools.ksp", version.ref = "ksp"}
+kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

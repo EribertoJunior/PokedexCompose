@@ -8,7 +8,6 @@ import com.example.pokedexcompose.data.dataBase.local.converters.ConverterSpecie
 @Entity
 data class EvolutionChain(
     @PrimaryKey val evolutionChainId: Int,
-    @TypeConverters(ConverterSpecieToEvolution::class)
     val evolutionList: List<SpecieToEvolution>
 ){
     companion object{

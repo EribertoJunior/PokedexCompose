@@ -18,11 +18,11 @@ data class PokemonDetail(
     @Embedded(prefix = "sprites_")
     val sprites: Sprites? = null,
     @TypeConverters(ConverterTypeColoursEnum::class)
-    var colorTypeList: List<TypeColoursEnum> = listOf(TypeColoursEnum.DARK),
+    val colorTypeList: List<TypeColoursEnum> = listOf(TypeColoursEnum.DARK),
     @Embedded(prefix = "species_")
-    var species: PokemonDetailSpecies? = null,
+    val species: PokemonDetailSpecies? = null,
     @TypeConverters(ConverterPokemonDetailStats::class)
-    var stats: List<PokemonDetailStats> =  emptyList()
+    val stats: List<PokemonDetailStats> =  emptyList()
 ) {
     companion object {
         const val POKEMON_DETAIL_ID = "pokemonDetailId"
@@ -42,7 +42,7 @@ data class Stat(
 )
 
 data class Sprites(
-    @Embedded(prefix = "other_") var other: Other?
+    @Embedded(prefix = "other_") val other: Other?
 )
 
 data class PokemonDetailSpecies(
@@ -51,14 +51,14 @@ data class PokemonDetailSpecies(
 )
 
 data class Other(
-    @Embedded(prefix = "official_artwork_") var officialArtwork: OfficialArtwork?,
-    @Embedded(prefix = "home_") var home: Home?,
+    @Embedded(prefix = "official_artwork_") val officialArtwork: OfficialArtwork?,
+    @Embedded(prefix = "home_") val home: Home?,
 )
 
 data class Home(
-    var frontDefault: String?
+    val frontDefault: String?
 )
 
 data class OfficialArtwork(
-    var frontDefault: String?
+    val frontDefault: String?
 )

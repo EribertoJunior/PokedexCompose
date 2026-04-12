@@ -6,7 +6,7 @@ import androidx.room.OnConflictStrategy
 import com.example.pokedexcompose.data.dataBase.local.entities.PokemonSpecies
 
 @Dao
-interface PokemonSpeciesDao {
+fun interface PokemonSpeciesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun saveAllSpecie(species: List<PokemonSpecies> )
+    suspend fun saveAllSpecie(species: List<PokemonSpecies>)
 }

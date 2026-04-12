@@ -1,15 +1,16 @@
 package com.example.pokedexcompose.data.dataBase.local.entities
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 @Entity
 data class Pokemon(
-    @PrimaryKey var pokemonId: Int = 0,
-    var name: String = "",
-    var imageUrl: String? = null,
-    //@Embedded(prefix = "detail_") var pokemonDetail: PokemonDetail
+    @PrimaryKey val pokemonId: Int = 0,
+    val name: String = "",
+    val imageUrl: String? = null
 ) {
+    @get:Ignore
     val idFormatted: String
         get() {
             return if (pokemonId < 10) {

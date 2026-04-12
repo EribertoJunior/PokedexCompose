@@ -28,7 +28,7 @@ data class PokemonAndDetail(
 )
 
 data class SpecieAndEvolutionChain(
-    @Embedded val pokemonSpecies: PokemonSpecies? = null,
+    @Embedded val pokemonSpecies: PokemonSpecies,
     @Relation(
         parentColumn = POKEMON_SPECIES_EVOLUTION_CHAIN_ID,
         entityColumn = EVOLUTION_CHAIN_ID
