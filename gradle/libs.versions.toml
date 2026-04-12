@@ -18,6 +18,7 @@ koin-android = "3.4.2"
 koin-android-compose = "3.4.5"
 ksp = "2.0.21-1.0.25"
 mockk = "1.13.2"
+kotlinx-coroutines = "1.8.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -50,6 +51,7 @@ androidx-room-testing = { group = "androidx.room", name = "room-testing", versio
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin-android" }
 koin-android-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin-android-compose" }
 io-mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk"}
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 
 [bundles]
 koin = [
