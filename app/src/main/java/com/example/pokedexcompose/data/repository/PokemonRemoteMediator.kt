@@ -1,6 +1,6 @@
 package com.example.pokedexcompose.data.repository
 
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -17,6 +17,7 @@ import com.example.pokedexcompose.data.model.remote.PokemonRemote
 import com.example.pokedexcompose.extensions.getUrlId
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 
@@ -52,56 +53,29 @@ class PokemonRemoteMediator(
                 }
             }
 
-            coroutineScope {
-                withContext(IO) {
-                    val response = remoteDataSource.getListPokemon(limit = PAGE_SIZE, offset = offSet)
-                    val pokemonList = response.results
-                    val endOfPaginationReached = pokemonList.isEmpty()
-                    val prevKey = getOffsetParameter(response.previous)
-                    val nextKey = getOffsetParameter(response.next)
+            withContext(IO) {
+                val response = remoteDataSource.getListPokemon(limit = state.pages.size, offset = offSet)
+                val pokemonList = response.results
+                val endOfPaginationReached = pokemonList.isEmpty()
+                val prevKey = getOffsetParameter(response.previous)
+                val nextKey = getOffsetParameter(response.next)
 
-                    // if(loadType == LoadType.REFRESH){
-                    //     pokemonDao.deleteAllPokemon()
-                    //     pokemonRemoteKeyDao.deleteAllPokemon()
-                    // }
-
-                    val listPokemonRemoteKey: ArrayList<PokemonRemoteKey> = arrayListOf()
-                    val listPokemon: ArrayList<Pokemon> = arrayListOf()
-                    val listPokemonDetail: ArrayList<PokemonDetail> = arrayListOf()
-                    val listPokemonSpecies: ArrayList<PokemonSpecies> = arrayListOf()
-
-                    val onPokemonBuilt: (Pokemon) -> Unit = {
-                        listPokemon.add(it)
-                    }
-                    val onPokemonDetailsBuilt: (PokemonDetail) -> Unit = {
-                        listPokemonDetail.add(it)
-                    }
-                    val onPokemonRemoteKeyBuilt: (PokemonRemoteKey) -> Unit = {
-                        listPokemonRemoteKey.add(it)
-                    }
-                    val onSpeciesFound: (PokemonSpecies) -> Unit = { species ->
-                        listPokemonSpecies.add(species)
-                    }
-
-                    pokemonList.forEach { pokemon ->
-                        findDetailsPokemon(
-                            pokemon = pokemon,
-                            prevKey = prevKey,
-                            nextKey = nextKey,
-                            onPokemonBuilt = onPokemonBuilt,
-                            onPokemonDetailsBuilt = onPokemonDetailsBuilt,
-                            onPokemonRemoteKeyBuilt = onPokemonRemoteKeyBuilt,
-                            onSpeciesFound = onSpeciesFound
-                        )
-                    }
-
-                    localDataSource.saveAllRemoteKey(listPokemonRemoteKey)
-                    localDataSource.saveAllPokemonDetail(listPokemonDetail)
-                    localDataSource.saveAllPokemons(listPokemon)
-                    localDataSource.saveAllPokemonSpecies(listPokemonSpecies)
-
-                    MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
+                val results = coroutineScope {
+                    pokemonList.map { pokemon ->
+                        async {
+                            fetchFullPokemonData(pokemon, prevKey, nextKey)
+                        }
+                    }.awaitAll().filterNotNull()
                 }
+
+                if (results.isNotEmpty()) {
+                    localDataSource.saveAllRemoteKey(results.map { it.remoteKey })
+                    localDataSource.saveAllPokemonDetail(results.map { it.detail })
+                    localDataSource.saveAllPokemons(results.map { it.pokemon })
+                    localDataSource.saveAllPokemonSpecies(results.mapNotNull { it.species })
+                }
+
+                MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -109,100 +83,69 @@ class PokemonRemoteMediator(
         }
     }
 
-    private suspend fun findDetailsPokemon(
+    private suspend fun fetchFullPokemonData(
         pokemon: PokemonRemote,
         prevKey: Int?,
-        nextKey: Int?,
-        onPokemonBuilt: (Pokemon) -> Unit = {},
-        onPokemonDetailsBuilt: (PokemonDetail) -> Unit = {},
-        onPokemonRemoteKeyBuilt: (PokemonRemoteKey) -> Unit = {},
-        onSpeciesFound: (PokemonSpecies) -> Unit = {}
-    ) {
-        coroutineScope {
-            withContext(IO) {
-                val detailRemote = async {
-                    remoteDataSource.getPokemonDetails(pokemon.name)
-                }
+        nextKey: Int?
+    ): PokemonFullData? {
+        return try {
+            val detailRemote = remoteDataSource.getPokemonDetails(pokemon.name)
 
-                detailRemote.await().run {
-                    onPokemonBuilt(
-                        Pokemon(
-                            pokemonId = id,
-                            name = pokemon.name,
-                            imageUrl = sprites.other.officialArtwork.frontDefault
-                        )
-                    )
+            val pokemonEntity = Pokemon(
+                pokemonId = detailRemote.id,
+                name = pokemon.name,
+                imageUrl = detailRemote.sprites.other.officialArtwork.frontDefault
+            )
 
-                    onPokemonDetailsBuilt(mapPokeDetailRemoteToPokeDetail())
+            val detailEntity = detailRemote.mapPokeDetailRemoteToPokeDetail()
 
-                    onPokemonRemoteKeyBuilt(
-                        PokemonRemoteKey(
-                            id = id.toLong(),
-                            pokemonName = pokemon.name,
-                            prevOffset = prevKey,
-                            nextOffset = nextKey
-                        )
-                    )
+            val remoteKeyEntity = PokemonRemoteKey(
+                id = detailRemote.id.toLong(),
+                pokemonName = pokemon.name,
+                prevOffset = prevKey,
+                nextOffset = nextKey
+            )
 
-                    findSpeciePokemon(pokemonDetailRemote = this) { species ->
-                        onSpeciesFound(species)
-                    }
-                }
-            }
+            val speciesEntity = findSpeciePokemon(detailRemote)
 
+            PokemonFullData(pokemonEntity, detailEntity, remoteKeyEntity, speciesEntity)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 
     private suspend fun findSpeciePokemon(
-        pokemonDetailRemote: PokemonDetailRemote,
-        onSpeciesFound: (PokemonSpecies) -> Unit = {}
-    ) {
-        withContext(IO) {
+        pokemonDetailRemote: PokemonDetailRemote
+    ): PokemonSpecies? {
+        return pokemonDetailRemote.species?.let { detailRemote ->
             try {
-                pokemonDetailRemote.species?.let { detailRemote ->
-                    val speciesRemote = async {
-                        remoteDataSource.searchPokemonSpecie(pokemonSpecieUrl = detailRemote.url)
+                remoteDataSource.searchPokemonSpecie(pokemonSpecieUrl = detailRemote.url)?.let { species ->
+                    species.evolutionChainAddressRemote?.url?.let { evolutionChainUrl ->
+                        findEvolutionChainPokemon(evolutionChainUrl)
                     }
-                    speciesRemote.await()?.let { species ->
-                        onSpeciesFound(species.mapToPokemonSpecie())
-
-                        species.evolutionChainAddressRemote?.url?.let { evolutionChainUrl ->
-                            findEvolutionChainPokemon(evolutionChainUrl)
-                        }
-                    }
+                    species.mapToPokemonSpecie()
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
+    private suspend fun findEvolutionChainPokemon(evolutionChainUrl: String) {
+        if (searchLocalEvolutionChainById(evolutionChainUrl)) {
+            try {
+                val evolutionChainRemote = remoteDataSource.searchEvolutionChan(evolutionChainUrl)
+                localDataSource.saveEvolutionChain(evolutionChainRemote.mapToEvolutionChain())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
 
-    private suspend fun findEvolutionChainPokemon(evolutionChainUrl: String) {
-        coroutineScope {
-            withContext(IO) {
-                if (searchLocalEvolutionChainById(evolutionChainUrl)) {
-                    //Dados de ${pokemon.name} não foram encontrados no banco de dados.
-                    try {
-                        val evolutionChainRemoteDeferred = async {
-                            remoteDataSource.searchEvolutionChan(evolutionChainUrl)
-                        }
-
-                        evolutionChainRemoteDeferred.await().let { evolutionChainRemote ->
-                            localDataSource.saveEvolutionChain(evolutionChainRemote.mapToEvolutionChain())
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-        }
-    }
-
-    private suspend fun searchLocalEvolutionChainById(evolutionChainUrl: String): Boolean {
-        val evolutionChainLocal = withContext(IO) {
-            //Buscando dados de evolucao no banco de dados
-            localDataSource.searchEvolutionChainById(evolutionChainUrl.getUrlId)
-        }
+    private fun searchLocalEvolutionChainById(evolutionChainUrl: String): Boolean {
+        val evolutionChainLocal = localDataSource.searchEvolutionChainById(evolutionChainUrl.getUrlId)
         return evolutionChainLocal == null
     }
 
@@ -230,12 +173,18 @@ class PokemonRemoteMediator(
 
     fun getOffsetParameter(url: String?): Int? {
         return url?.let {
-            Uri.parse(url).getQueryParameter("offset")?.toInt()
+            url.toUri().getQueryParameter("offset")?.toInt()
         }
     }
 
-    companion object {
-        const val PAGE_SIZE = 100
+    private data class PokemonFullData(
+        val pokemon: Pokemon,
+        val detail: PokemonDetail,
+        val remoteKey: PokemonRemoteKey,
+        val species: PokemonSpecies?
+    )
+
+    private companion object {
         const val OFFSET = 100
     }
 }
