@@ -1,7 +1,7 @@
 package com.example.pokedexcompose.data.repository
 
 import com.example.pokedexcompose.data.dataSource.local.LocalDataSource
-import com.example.pokedexcompose.samples.listPokemonSample
+import com.example.pokedexcompose.samples.listPokemonEntitySample
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
@@ -32,7 +32,7 @@ class DetailRepositoryImplTest {
 
     @Test
     fun `should return a PokemonAndDetail when localDataSource returns a PokemonAndDetail`() {
-        val pokemonAndDetail = listPokemonSample[0]
+        val pokemonAndDetail = listPokemonEntitySample[0]
 
         every { localDataSource.searchPokemonByName(any()) } answers {
             flow {

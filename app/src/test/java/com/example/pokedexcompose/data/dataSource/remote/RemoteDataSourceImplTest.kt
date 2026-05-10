@@ -1,10 +1,10 @@
 package com.example.pokedexcompose.data.dataSource.remote
 
-import com.example.pokedexcompose.data.dataBase.remote.PokemonService
-import com.example.pokedexcompose.data.model.remote.EvolutionChainRemote
-import com.example.pokedexcompose.data.model.remote.ListPokemonRemote
-import com.example.pokedexcompose.data.model.remote.PokemonDetailRemote
-import com.example.pokedexcompose.data.model.remote.SpeciesRemote
+import com.example.pokedexcompose.data.network.PokemonService
+import com.example.pokedexcompose.data.network.model.EvolutionChainRemote
+import com.example.pokedexcompose.data.network.model.ListPokemonRemote
+import com.example.pokedexcompose.data.network.model.PokemonDetailRemote
+import com.example.pokedexcompose.data.network.model.SpeciesRemote
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.mockk

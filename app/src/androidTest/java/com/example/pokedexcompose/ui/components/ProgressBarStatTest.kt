@@ -16,9 +16,9 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.unit.dp
 import com.example.pokedexcompose.R
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonDetailStats
-import com.example.pokedexcompose.data.dataBase.local.entities.Stat
-import com.example.pokedexcompose.data.model.local.enums.TypeColoursEnum
+import com.example.pokedexcompose.data.local.entities.PokemonDetailStats
+import com.example.pokedexcompose.data.local.entities.Stat
+import com.example.pokedexcompose.data.local.enums.TypeColoursEnum
 import com.example.pokedexcompose.extensions.color
 import com.example.pokedexcompose.ui.theme.PokedexComposeTheme
 import org.junit.Rule

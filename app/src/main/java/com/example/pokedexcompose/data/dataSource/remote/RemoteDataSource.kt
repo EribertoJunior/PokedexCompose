@@ -1,9 +1,9 @@
 package com.example.pokedexcompose.data.dataSource.remote
 
-import com.example.pokedexcompose.data.model.remote.EvolutionChainRemote
-import com.example.pokedexcompose.data.model.remote.ListPokemonRemote
-import com.example.pokedexcompose.data.model.remote.PokemonDetailRemote
-import com.example.pokedexcompose.data.model.remote.SpeciesRemote
+import com.example.pokedexcompose.data.network.model.EvolutionChainRemote
+import com.example.pokedexcompose.data.network.model.ListPokemonRemote
+import com.example.pokedexcompose.data.network.model.PokemonDetailRemote
+import com.example.pokedexcompose.data.network.model.SpeciesRemote
 
 interface RemoteDataSource {
     suspend fun getListPokemon(

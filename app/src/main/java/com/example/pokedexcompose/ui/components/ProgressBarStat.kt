@@ -19,9 +19,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonDetailStats
-import com.example.pokedexcompose.data.dataBase.local.entities.Stat
-import com.example.pokedexcompose.data.model.local.enums.TypeColoursEnum
+import com.example.pokedexcompose.data.local.entities.PokemonDetailStats
+import com.example.pokedexcompose.data.local.entities.Stat
+import com.example.pokedexcompose.data.local.enums.TypeColoursEnum
 import com.example.pokedexcompose.extensions.color
 import com.example.pokedexcompose.ui.theme.PokedexComposeTheme
 

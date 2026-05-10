@@ -21,8 +21,8 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.example.pokedexcompose.ui.viewmodels.HomeViewModel
-import com.example.pokedexcompose.data.model.local.PokemonAndDetail
-import com.example.pokedexcompose.samples.listPokemonSample
+import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
+import com.example.pokedexcompose.samples.listPokemonEntitySample
 import com.example.pokedexcompose.ui.components.LoadingAnimation
 import com.example.pokedexcompose.ui.components.PokemonItem
 import com.example.pokedexcompose.ui.theme.PokedexComposeTheme
@@ -53,7 +53,7 @@ fun HomeScreenView(
 
             items(
                 count = pokemonAndDetailLazyPagingItems.itemCount,
-                key = pokemonAndDetailLazyPagingItems.itemKey { it.pokemon.pokemonId }
+                key = pokemonAndDetailLazyPagingItems.itemKey { it.pokemonEntity.pokemonId }
             ) { index ->
                 pokemonAndDetailLazyPagingItems[index]?.let { pokemonAndDetail ->
                     PokemonItem(
@@ -100,7 +100,7 @@ fun PokemonListPreview() {
             HomeScreenView(
                 pokemonAndDetailLazyPagingItems = flowOf(
                     PagingData.from(
-                        listPokemonSample
+                        listPokemonEntitySample
                     )
                 ).collectAsLazyPagingItems()
             )

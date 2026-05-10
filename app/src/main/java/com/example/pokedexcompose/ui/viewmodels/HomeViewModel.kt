@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.pokedexcompose.data.model.local.PokemonAndDetail
+import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
 import com.example.pokedexcompose.data.repository.HomeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

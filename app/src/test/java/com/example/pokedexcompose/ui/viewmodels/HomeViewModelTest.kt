@@ -1,6 +1,7 @@
 package com.example.pokedexcompose.ui.viewmodels
 
 import androidx.paging.PagingData
+import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
 import com.example.pokedexcompose.data.repository.HomeRepository
 import io.mockk.every
 import io.mockk.mockk
@@ -34,7 +35,7 @@ class HomeViewModelTest {
     @Test
     fun `fetchPokemons should collect PagingData from repository`() {
         // Given
-        val pagingData = PagingData.empty<com.example.pokedexcompose.data.model.local.PokemonAndDetail>()
+        val pagingData = PagingData.empty<PokemonAndDetail>()
         every { repository.getPokemonList() } returns flowOf(pagingData)
 
         // When

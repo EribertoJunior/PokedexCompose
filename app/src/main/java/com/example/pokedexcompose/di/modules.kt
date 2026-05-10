@@ -1,8 +1,8 @@
 package com.example.pokedexcompose.di
 
-import com.example.pokedexcompose.data.dataBase.local.RoomConfig
-import com.example.pokedexcompose.data.dataBase.remote.PokemonPagingSource
-import com.example.pokedexcompose.data.dataBase.remote.RetrofitConfig
+import com.example.pokedexcompose.data.local.RoomConfig
+import com.example.pokedexcompose.data.network.PokemonPagingSource
+import com.example.pokedexcompose.data.network.RetrofitConfig
 import com.example.pokedexcompose.data.dataSource.local.LocalDataSource
 import com.example.pokedexcompose.data.dataSource.local.LocalDataSourceImpl
 import com.example.pokedexcompose.data.dataSource.remote.RemoteDataSource
@@ -32,7 +32,7 @@ val modules = module {
     factory<HomeRepository> {
         HomeRepositoryImpl(
             pokemonRemoteMediator = get(),
-            pokemonDao = get()
+            localDataSource = get()
         )
     }
     factory<DetailRepository> {

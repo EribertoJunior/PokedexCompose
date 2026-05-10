@@ -1,6 +1,6 @@
 package com.example.pokedexcompose.data.repository
 
-import com.example.pokedexcompose.data.model.local.PokemonAndDetail
+import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
 import kotlinx.coroutines.flow.Flow
 
 interface DetailRepository {

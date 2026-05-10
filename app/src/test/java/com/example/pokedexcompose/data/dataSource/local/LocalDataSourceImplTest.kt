@@ -1,13 +1,13 @@
 package com.example.pokedexcompose.data.dataSource.local
 
-import com.example.pokedexcompose.data.dataBase.local.EvolutionChainDao
-import com.example.pokedexcompose.data.dataBase.local.PokemonDao
-import com.example.pokedexcompose.data.dataBase.local.PokemonDetailDao
-import com.example.pokedexcompose.data.dataBase.local.PokemonRemoteKeyDao
-import com.example.pokedexcompose.data.dataBase.local.PokemonSpeciesDao
-import com.example.pokedexcompose.data.dataBase.local.entities.EvolutionChain
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonRemoteKey
-import com.example.pokedexcompose.data.model.local.PokemonAndDetail
+import com.example.pokedexcompose.data.local.dao.EvolutionChainDao
+import com.example.pokedexcompose.data.local.dao.PokemonDao
+import com.example.pokedexcompose.data.local.dao.PokemonDetailDao
+import com.example.pokedexcompose.data.local.dao.PokemonRemoteKeyDao
+import com.example.pokedexcompose.data.local.dao.PokemonSpeciesDao
+import com.example.pokedexcompose.data.local.entities.EvolutionChainEntity
+import com.example.pokedexcompose.data.local.entities.PokemonRemoteKeyEntity
+import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -111,15 +111,15 @@ class LocalDataSourceImplTest {
     @Test
     fun `should return a PokemonRemoteKey when pokemonRemoteKeyDao returns a PokemonRemoteKey`() {
 
-        val pokemonRemoteKey = mockk<PokemonRemoteKey>(relaxed = true)
+        val pokemonRemoteKeyEntity = mockk<PokemonRemoteKeyEntity>(relaxed = true)
 
-        coEvery { pokemonRemoteKeyDao.getPokemonRemoteKeyFromName(any()) } answers { pokemonRemoteKey }
+        coEvery { pokemonRemoteKeyDao.getPokemonRemoteKeyFromName(any()) } answers { pokemonRemoteKeyEntity }
 
         runBlocking {
             val pokemonRemoteKeyByName =
                 localDataSourceImpl.getPokemonRemoteKeyByName("")
 
-            assertEquals(pokemonRemoteKey, pokemonRemoteKeyByName)
+            assertEquals(pokemonRemoteKeyEntity, pokemonRemoteKeyByName)
         }
     }
 
@@ -192,7 +192,7 @@ class LocalDataSourceImplTest {
     @Test
     fun `should return an Evolution Chain when pokemonRemoteKeyDao returns an Evolution Chain`() {
 
-        val pokemonRemoteKey = mockk<EvolutionChain>(relaxed = true)
+        val pokemonRemoteKey = mockk<EvolutionChainEntity>(relaxed = true)
 
         coEvery { evolutionChainDao.searchEvolutionChainById(any()) } answers { pokemonRemoteKey }
 

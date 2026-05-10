@@ -35,15 +35,15 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.pokedexcompose.R
-import com.example.pokedexcompose.data.dataBase.local.entities.Home
-import com.example.pokedexcompose.data.dataBase.local.entities.OfficialArtwork
-import com.example.pokedexcompose.data.dataBase.local.entities.Other
-import com.example.pokedexcompose.data.dataBase.local.entities.Pokemon
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonDetail
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonDetailSpecies
-import com.example.pokedexcompose.data.dataBase.local.entities.Sprites
-import com.example.pokedexcompose.data.model.local.PokemonAndDetail
-import com.example.pokedexcompose.data.model.local.enums.TypeColoursEnum
+import com.example.pokedexcompose.data.local.entities.Home
+import com.example.pokedexcompose.data.local.entities.OfficialArtwork
+import com.example.pokedexcompose.data.local.entities.Other
+import com.example.pokedexcompose.data.local.entities.PokemonEntity
+import com.example.pokedexcompose.data.local.entities.PokemonDetail
+import com.example.pokedexcompose.data.local.entities.PokemonDetailSpecies
+import com.example.pokedexcompose.data.local.entities.Sprites
+import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
+import com.example.pokedexcompose.data.local.enums.TypeColoursEnum
 import com.example.pokedexcompose.extensions.color
 import com.example.pokedexcompose.extensions.titlecase
 import com.example.pokedexcompose.extensions.toDoubleFormat
@@ -80,7 +80,7 @@ fun PokemonItem(
                     Image(
                         painter = rememberAsyncImagePainter(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data(pokemonAndDetail.pokemon.imageUrl)
+                                .data(pokemonAndDetail.pokemonEntity.imageUrl)
                                 .crossfade(true)
                                 .build(),
                             error = painterResource(
@@ -90,7 +90,7 @@ fun PokemonItem(
                         ),
                         contentDescription = stringResource(
                             R.string.pokemon_image_content_description,
-                            pokemonAndDetail.pokemon.name
+                            pokemonAndDetail.pokemonEntity.name
                         ),
                         modifier = Modifier
                             .size(130.dp)
@@ -98,7 +98,7 @@ fun PokemonItem(
                         contentScale = ContentScale.Crop,
                     )
                     Text(
-                        text = pokemonAndDetail.pokemon.idFormatted,
+                        text = pokemonAndDetail.pokemonEntity.idFormatted,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
                             .padding(top = 8.dp)
@@ -112,7 +112,7 @@ fun PokemonItem(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = pokemonAndDetail.pokemon.name.titlecase,
+                    text = pokemonAndDetail.pokemonEntity.name.titlecase,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -175,7 +175,7 @@ fun PokemonItemPreview() {
         Surface {
             PokemonItem(
                 PokemonAndDetail(
-                    pokemon = Pokemon(
+                    pokemonEntity = PokemonEntity(
                         pokemonId = 10,
                         name = "Teste",
                         imageUrl = ""

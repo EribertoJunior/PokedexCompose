@@ -1,6 +1,7 @@
 package com.example.pokedexcompose.data.dataBase.local.converters
 
-import com.example.pokedexcompose.data.dataBase.local.entities.SpecieToEvolution
+import com.example.pokedexcompose.data.local.entities.SpecieToEvolution
+import com.example.pokedexcompose.data.local.converters.ConverterSpecieToEvolution
 import io.mockk.spyk
 import org.junit.Assert.*
 import org.junit.Test

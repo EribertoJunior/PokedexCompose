@@ -1,12 +1,12 @@
 package com.example.pokedexcompose.data.dataSource.local
 
 import androidx.paging.PagingSource
-import com.example.pokedexcompose.data.dataBase.local.entities.EvolutionChain
-import com.example.pokedexcompose.data.dataBase.local.entities.Pokemon
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonDetail
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonRemoteKey
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonSpecies
-import com.example.pokedexcompose.data.model.local.PokemonAndDetail
+import com.example.pokedexcompose.data.local.entities.EvolutionChainEntity
+import com.example.pokedexcompose.data.local.entities.PokemonEntity
+import com.example.pokedexcompose.data.local.entities.PokemonDetail
+import com.example.pokedexcompose.data.local.entities.PokemonRemoteKeyEntity
+import com.example.pokedexcompose.data.local.entities.PokemonSpeciesEntity
+import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
 import kotlinx.coroutines.flow.Flow
 
 interface LocalDataSource {
@@ -16,25 +16,25 @@ interface LocalDataSource {
 
     suspend fun deleteAllPokemon()
 
-    suspend fun saveAllPokemons(pokemons: List<Pokemon>)
+    suspend fun saveAllPokemons(pokemonEntities: List<PokemonEntity>)
 
-    suspend fun savePokemon(pokemon: Pokemon)
+    suspend fun savePokemon(pokemonEntity: PokemonEntity)
 
-    suspend fun saveAllRemoteKey(pokemonRemoteKeys: List<PokemonRemoteKey>)
+    suspend fun saveAllRemoteKey(pokemonRemoteKeyEntities: List<PokemonRemoteKeyEntity>)
 
-    suspend fun getPokemonRemoteKeyByName(pokemonName: String): PokemonRemoteKey
+    suspend fun getPokemonRemoteKeyByName(pokemonName: String): PokemonRemoteKeyEntity
 
     suspend fun deleteAllRemoteKey()
 
-    suspend fun saveRemoteKey(pokemonRemoteKey: PokemonRemoteKey)
+    suspend fun saveRemoteKey(pokemonRemoteKeyEntity: PokemonRemoteKeyEntity)
 
     suspend fun saveAllPokemonDetail(pokemonDetails: List<PokemonDetail>)
 
-    suspend fun saveAllPokemonSpecies(species: List<PokemonSpecies> )
+    suspend fun saveAllPokemonSpecies(species: List<PokemonSpeciesEntity> )
 
-    suspend fun saveAllEvolutionChain(evolutionChain: List<EvolutionChain>)
+    suspend fun saveAllEvolutionChain(evolutionChainEntity: List<EvolutionChainEntity>)
 
-    suspend fun saveEvolutionChain(evolutionChain: EvolutionChain)
+    suspend fun saveEvolutionChain(evolutionChainEntity: EvolutionChainEntity)
 
-    fun searchEvolutionChainById(chainId: Int): EvolutionChain?
+    fun searchEvolutionChainById(chainId: Int): EvolutionChainEntity?
 }

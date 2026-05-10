@@ -49,10 +49,10 @@ import com.example.pokedexcompose.ui.viewmodels.DetailsViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.pokedexcompose.R
-import com.example.pokedexcompose.data.model.local.PokemonAndDetail
+import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
 import com.example.pokedexcompose.extensions.color
 import com.example.pokedexcompose.extensions.titlecase
-import com.example.pokedexcompose.samples.listPokemonSample
+import com.example.pokedexcompose.samples.listPokemonEntitySample
 import com.example.pokedexcompose.ui.components.ProgressBarStat
 import com.example.pokedexcompose.ui.theme.PokedexComposeTheme
 
@@ -99,7 +99,7 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = pokemonAndDetail.pokemon.name.titlecase,
+                        text = pokemonAndDetail.pokemonEntity.name.titlecase,
                         fontWeight = FontWeight.Bold,
                         fontSize = 23.sp,
                         modifier = Modifier
@@ -108,7 +108,7 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
                     )
 
                     Text(
-                        text = pokemonAndDetail.pokemon.idFormatted,
+                        text = pokemonAndDetail.pokemonEntity.idFormatted,
                         fontWeight = FontWeight.Bold,
                         fontSize = 23.sp,
                         modifier = Modifier
@@ -120,7 +120,7 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
                 Image(
                     painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(pokemonAndDetail.pokemon.imageUrl)
+                            .data(pokemonAndDetail.pokemonEntity.imageUrl)
                             .crossfade(true)
                             .build(),
                         error = painterResource(
@@ -138,7 +138,7 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
             }
         }
 
-        pokemonAndDetail.specieAndEvolutionChain?.pokemonSpecies?.flavorTextEntreies?.flavorText?.let {
+        pokemonAndDetail.specieAndEvolutionChain?.pokemonSpeciesEntity?.flavorTextEntries?.flavorText?.let {
             Text(
                 text = it,
                 modifier = Modifier
@@ -200,7 +200,7 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
             }
         }
 
-        pokemonAndDetail.specieAndEvolutionChain?.evolutionChain?.evolutionList?.let { evolutionList ->
+        pokemonAndDetail.specieAndEvolutionChain?.evolutionChainEntity?.evolutionList?.let { evolutionList ->
             Row(modifier = Modifier
                 .padding(all = 8.dp)
                 .fillMaxWidth()
@@ -238,7 +238,7 @@ fun DetailsScreenPreview() {
     PokedexComposeTheme {
         Surface {
             DetailsScreen(
-                listPokemonSample[5]
+                listPokemonEntitySample[5]
             )
         }
     }

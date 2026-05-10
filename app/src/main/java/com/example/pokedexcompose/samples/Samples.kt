@@ -1,31 +1,31 @@
 package com.example.pokedexcompose.samples
 
-import com.example.pokedexcompose.data.dataBase.local.entities.EvolutionChain
-import com.example.pokedexcompose.data.dataBase.local.entities.EvolutionChainAddress
-import com.example.pokedexcompose.data.dataBase.local.entities.FlavorTextEntreies
-import com.example.pokedexcompose.data.dataBase.local.entities.Home
-import com.example.pokedexcompose.data.dataBase.local.entities.Language
-import com.example.pokedexcompose.data.dataBase.local.entities.OfficialArtwork
-import com.example.pokedexcompose.data.dataBase.local.entities.Other
-import com.example.pokedexcompose.data.dataBase.local.entities.Pokemon
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonDetail
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonDetailSpecies
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonDetailStats
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonSpecies
-import com.example.pokedexcompose.data.dataBase.local.entities.SpecieToEvolution
-import com.example.pokedexcompose.data.dataBase.local.entities.Sprites
-import com.example.pokedexcompose.data.dataBase.local.entities.Stat
-import com.example.pokedexcompose.data.dataBase.local.entities.Version
-import com.example.pokedexcompose.data.model.local.PokemonAndDetail
-import com.example.pokedexcompose.data.model.local.SpecieAndEvolutionChain
-import com.example.pokedexcompose.data.model.local.enums.TypeColoursEnum
+import com.example.pokedexcompose.data.local.entities.EvolutionChainEntity
+import com.example.pokedexcompose.data.local.entities.EvolutionChainAddress
+import com.example.pokedexcompose.data.local.entities.FlavorTextEntries
+import com.example.pokedexcompose.data.local.entities.Home
+import com.example.pokedexcompose.data.local.entities.Language
+import com.example.pokedexcompose.data.local.entities.OfficialArtwork
+import com.example.pokedexcompose.data.local.entities.Other
+import com.example.pokedexcompose.data.local.entities.PokemonEntity
+import com.example.pokedexcompose.data.local.entities.PokemonDetail
+import com.example.pokedexcompose.data.local.entities.PokemonDetailSpecies
+import com.example.pokedexcompose.data.local.entities.PokemonDetailStats
+import com.example.pokedexcompose.data.local.entities.PokemonSpeciesEntity
+import com.example.pokedexcompose.data.local.entities.SpecieToEvolution
+import com.example.pokedexcompose.data.local.entities.Sprites
+import com.example.pokedexcompose.data.local.entities.Stat
+import com.example.pokedexcompose.data.local.entities.Version
+import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
+import com.example.pokedexcompose.data.local.relations.SpecieAndEvolutionChain
+import com.example.pokedexcompose.data.local.enums.TypeColoursEnum
 
 private fun setUrlImage(idPokemon: Int) =
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${idPokemon}.png"
 
-val listPokemonSample = listOf(
+val listPokemonEntitySample = listOf(
     PokemonAndDetail(
-        pokemon = Pokemon(
+        pokemonEntity = PokemonEntity(
             pokemonId = 0,
             name = "Bulbasaur",
             imageUrl = setUrlImage(1)
@@ -77,7 +77,7 @@ val listPokemonSample = listOf(
     ),
 
     PokemonAndDetail(
-        pokemon = Pokemon(
+        pokemonEntity = PokemonEntity(
             pokemonId = 1,
             name = "Ivysaur",
             imageUrl = setUrlImage(2)
@@ -128,7 +128,7 @@ val listPokemonSample = listOf(
         )
     ),
     PokemonAndDetail(
-        pokemon = Pokemon(
+        pokemonEntity = PokemonEntity(
             pokemonId = 2,
             name = "Venusaur",
             imageUrl = setUrlImage(3)
@@ -179,7 +179,7 @@ val listPokemonSample = listOf(
         )
     ),
     PokemonAndDetail(
-        pokemon = Pokemon(
+        pokemonEntity = PokemonEntity(
             pokemonId = 3,
             name = "Charmander",
             imageUrl = setUrlImage(4)
@@ -230,7 +230,7 @@ val listPokemonSample = listOf(
         ),
     ),
     PokemonAndDetail(
-        pokemon = Pokemon(
+        pokemonEntity = PokemonEntity(
             pokemonId = 4,
             name = "Charmeleon",
 
@@ -282,7 +282,7 @@ val listPokemonSample = listOf(
         )
     ),
     PokemonAndDetail(
-        pokemon = Pokemon(
+        pokemonEntity = PokemonEntity(
             pokemonId = 5,
             name = "Charizard",
             imageUrl = setUrlImage(6)
@@ -356,8 +356,8 @@ val listPokemonSample = listOf(
             )
         ),
         specieAndEvolutionChain = SpecieAndEvolutionChain(
-            pokemonSpecies = PokemonSpecies(
-                flavorTextEntreies = FlavorTextEntreies(
+            pokemonSpeciesEntity = PokemonSpeciesEntity(
+                flavorTextEntries = FlavorTextEntries(
                     flavorText = "A CHARIZARD flies about in search of\nstrong opponents. It breathes intense\nflames that can melt any material. However,  \nit will never torch a weaker foe.",
                     version = Version("en"),
                     language = Language("en")
@@ -365,7 +365,7 @@ val listPokemonSample = listOf(
                 evolutionChainAddress = EvolutionChainAddress(""),
                 pokemonSpeciesEvolutionChainId = 0
             ),
-            evolutionChain = EvolutionChain(
+            evolutionChainEntity = EvolutionChainEntity(
                 evolutionChainId = 0,
                 evolutionList = listOf(
                     SpecieToEvolution(name = "charmander", imageUrl = ""),
@@ -377,7 +377,7 @@ val listPokemonSample = listOf(
 
     ),
     PokemonAndDetail(
-        pokemon = Pokemon(
+        pokemonEntity = PokemonEntity(
             pokemonId = 6,
             name = "Squirtle",
             imageUrl = setUrlImage(7)
@@ -428,7 +428,7 @@ val listPokemonSample = listOf(
         ),
     ),
     PokemonAndDetail(
-        pokemon = Pokemon(
+        pokemonEntity = PokemonEntity(
             pokemonId = 7,
             name = "Wartortle",
             imageUrl = setUrlImage(8)
@@ -479,7 +479,7 @@ val listPokemonSample = listOf(
         ),
     ),
     PokemonAndDetail(
-        pokemon = Pokemon(
+        pokemonEntity = PokemonEntity(
             pokemonId = 8,
             name = "Blastoise",
             imageUrl = setUrlImage(9)

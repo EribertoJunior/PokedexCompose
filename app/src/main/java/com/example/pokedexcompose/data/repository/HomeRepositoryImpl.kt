@@ -4,33 +4,32 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.pokedexcompose.data.dataBase.local.PokemonDao
-import com.example.pokedexcompose.data.model.local.PokemonAndDetail
+import com.example.pokedexcompose.data.dataSource.local.LocalDataSource
+import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
 import kotlinx.coroutines.flow.Flow
 
 class HomeRepositoryImpl(
     private val pokemonRemoteMediator: PokemonRemoteMediator,
-    private val pokemonDao: PokemonDao
+    private val localDataSource: LocalDataSource
 ) : HomeRepository {
 
-    @ExperimentalPagingApi
+    @OptIn(ExperimentalPagingApi::class)
     override fun getPokemonList(): Flow<PagingData<PokemonAndDetail>> {
         return Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
-                maxSize = MAX_SIZE,
-                initialLoadSize = PAGE_SIZE + PREFETCH_SIZE,
                 prefetchDistance = PREFETCH_SIZE,
+                maxSize = MAX_SIZE,
                 enablePlaceholders = false
             ),
             remoteMediator = pokemonRemoteMediator,
-            pagingSourceFactory = { pokemonDao.getPokemons() }
+            pagingSourceFactory = { localDataSource.getPokemons() }
         ).flow
     }
 
     private companion object {
-        const val PREFETCH_SIZE = 50
-        const val PAGE_SIZE = 100
-        const val MAX_SIZE = PAGE_SIZE + (PREFETCH_SIZE * 2)
+        const val PAGE_SIZE = 40
+        const val PREFETCH_SIZE = 10
+        const val MAX_SIZE = PAGE_SIZE * 4
     }
 }

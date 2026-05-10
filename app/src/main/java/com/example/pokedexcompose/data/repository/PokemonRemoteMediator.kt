@@ -5,15 +5,15 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import com.example.pokedexcompose.data.dataBase.local.entities.Pokemon
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonDetail
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonRemoteKey
-import com.example.pokedexcompose.data.dataBase.local.entities.PokemonSpecies
+import com.example.pokedexcompose.data.local.entities.PokemonEntity
+import com.example.pokedexcompose.data.local.entities.PokemonDetail
+import com.example.pokedexcompose.data.local.entities.PokemonRemoteKeyEntity
+import com.example.pokedexcompose.data.local.entities.PokemonSpeciesEntity
 import com.example.pokedexcompose.data.dataSource.local.LocalDataSource
 import com.example.pokedexcompose.data.dataSource.remote.RemoteDataSource
-import com.example.pokedexcompose.data.model.local.PokemonAndDetail
-import com.example.pokedexcompose.data.model.remote.PokemonDetailRemote
-import com.example.pokedexcompose.data.model.remote.PokemonRemote
+import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
+import com.example.pokedexcompose.data.network.model.PokemonDetailRemote
+import com.example.pokedexcompose.data.network.model.PokemonRemote
 import com.example.pokedexcompose.extensions.getUrlId
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
@@ -35,7 +35,7 @@ class PokemonRemoteMediator(
             val offSet = when (loadType) {
                 LoadType.REFRESH -> {
                     val remoteKey = getClosestRemoteKeyToCurrentPosition(state)
-                    remoteKey?.nextOffset?.minus(OFFSET) ?: 0
+                    remoteKey?.nextOffset?.minus(PAGE_SIZE) ?: 0
                 }
                 LoadType.PREPEND -> {
                     val remoteKey = getRemoteKeyForFirstItem(state)
@@ -54,7 +54,7 @@ class PokemonRemoteMediator(
             }
 
             withContext(IO) {
-                val response = remoteDataSource.getListPokemon(limit = state.pages.size, offset = offSet)
+                val response = remoteDataSource.getListPokemon(limit = PAGE_SIZE, offset = offSet)
                 val pokemonList = response.results
                 val endOfPaginationReached = pokemonList.isEmpty()
                 val prevKey = getOffsetParameter(response.previous)
@@ -71,7 +71,7 @@ class PokemonRemoteMediator(
                 if (results.isNotEmpty()) {
                     localDataSource.saveAllRemoteKey(results.map { it.remoteKey })
                     localDataSource.saveAllPokemonDetail(results.map { it.detail })
-                    localDataSource.saveAllPokemons(results.map { it.pokemon })
+                    localDataSource.saveAllPokemons(results.map { it.pokemonEntity })
                     localDataSource.saveAllPokemonSpecies(results.mapNotNull { it.species })
                 }
 
@@ -91,7 +91,7 @@ class PokemonRemoteMediator(
         return try {
             val detailRemote = remoteDataSource.getPokemonDetails(pokemon.name)
 
-            val pokemonEntity = Pokemon(
+            val pokemonEntity = PokemonEntity(
                 pokemonId = detailRemote.id,
                 name = pokemon.name,
                 imageUrl = detailRemote.sprites.other.officialArtwork.frontDefault
@@ -99,7 +99,7 @@ class PokemonRemoteMediator(
 
             val detailEntity = detailRemote.mapPokeDetailRemoteToPokeDetail()
 
-            val remoteKeyEntity = PokemonRemoteKey(
+            val remoteKeyEntity = PokemonRemoteKeyEntity(
                 id = detailRemote.id.toLong(),
                 pokemonName = pokemon.name,
                 prevOffset = prevKey,
@@ -117,7 +117,7 @@ class PokemonRemoteMediator(
 
     private suspend fun findSpeciePokemon(
         pokemonDetailRemote: PokemonDetailRemote
-    ): PokemonSpecies? {
+    ): PokemonSpeciesEntity? {
         return pokemonDetailRemote.species?.let { detailRemote ->
             try {
                 remoteDataSource.searchPokemonSpecie(pokemonSpecieUrl = detailRemote.url)?.let { species ->
@@ -149,25 +149,25 @@ class PokemonRemoteMediator(
         return evolutionChainLocal == null
     }
 
-    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, PokemonAndDetail>): PokemonRemoteKey? {
+    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, PokemonAndDetail>): PokemonRemoteKeyEntity? {
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
             ?.let { pokemonAndDetail ->
-                localDataSource.getPokemonRemoteKeyByName(pokemonAndDetail.pokemon.name)
+                localDataSource.getPokemonRemoteKeyByName(pokemonAndDetail.pokemonEntity.name)
             }
     }
 
-    private suspend fun getClosestRemoteKeyToCurrentPosition(state: PagingState<Int, PokemonAndDetail>): PokemonRemoteKey? {
+    private suspend fun getClosestRemoteKeyToCurrentPosition(state: PagingState<Int, PokemonAndDetail>): PokemonRemoteKeyEntity? {
         return state.anchorPosition?.let { position ->
-            state.closestItemToPosition(position)?.pokemon?.name?.let { pokemonName ->
+            state.closestItemToPosition(position)?.pokemonEntity?.name?.let { pokemonName ->
                 localDataSource.getPokemonRemoteKeyByName(pokemonName)
             }
         }
     }
 
-    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, PokemonAndDetail>): PokemonRemoteKey? {
+    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, PokemonAndDetail>): PokemonRemoteKeyEntity? {
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
             ?.let { pokemonAndDetail ->
-                localDataSource.getPokemonRemoteKeyByName(pokemonAndDetail.pokemon.name)
+                localDataSource.getPokemonRemoteKeyByName(pokemonAndDetail.pokemonEntity.name)
             }
     }
 
@@ -178,13 +178,13 @@ class PokemonRemoteMediator(
     }
 
     private data class PokemonFullData(
-        val pokemon: Pokemon,
+        val pokemonEntity: PokemonEntity,
         val detail: PokemonDetail,
-        val remoteKey: PokemonRemoteKey,
-        val species: PokemonSpecies?
+        val remoteKey: PokemonRemoteKeyEntity,
+        val species: PokemonSpeciesEntity?
     )
 
     private companion object {
-        const val OFFSET = 100
+        const val PAGE_SIZE = 40
     }
 }
