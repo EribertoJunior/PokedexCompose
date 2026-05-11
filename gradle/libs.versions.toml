@@ -17,6 +17,7 @@ coil = "2.2.2"
 koin-android = "3.4.2"
 koin-android-compose = "3.4.5"
 ksp = "2.3.2"
+kover = "0.9.8"
 mockk = "1.13.2"
 kotlinx-coroutines = "1.8.1"
 
@@ -88,4 +89,5 @@ androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kspRoom = {id = "com.google.devtools.ksp", version.ref = "ksp"}
 kotlinCompose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 

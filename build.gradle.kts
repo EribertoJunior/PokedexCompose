@@ -5,5 +5,6 @@ plugins {
     alias(libs.plugins.kotlinAndroid) apply false
     alias(libs.plugins.kspRoom) apply false
     alias(libs.plugins.kotlinCompose) apply false
+    alias(libs.plugins.kover) apply false
 }
 true // Needed to make the Suppress annotation work for the plugins block

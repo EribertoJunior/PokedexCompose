@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kspRoom)
     alias(libs.plugins.kotlinCompose)
+    alias(libs.plugins.kover)
 }
 
 android {
@@ -29,7 +30,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField( "String", "SERVER_URL", "https://pokeapi.co/api/v2/")
+            buildConfigField( "String", "SERVER_URL", "\"https://pokeapi.co/api/v2/\"")
         }
     }
     compileOptions {
@@ -76,4 +77,31 @@ dependencies {
     androidTestImplementation(libs.compose.ui.test.junit4)
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
+}
+
+kover {
+    reports {
+        total {
+            filters {
+                excludes {
+                    classes(
+                        "*.BuildConfig",
+                        "*.*_Impl*", // Room generated
+                        "*.MyApplication",
+                        "*.di.*",
+                        "*.ui.theme.*",
+                        "*.*Fragment*",
+                        "*.*Activity*"
+                    )
+                }
+            }
+            verify {
+                rule {
+                    bound {
+                        minValue = 50
+                    }
+                }
+            }
+        }
+    }
 }
