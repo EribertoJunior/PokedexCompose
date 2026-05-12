@@ -11,8 +11,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 
@@ -33,15 +35,17 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `fetchPokemons should collect PagingData from useCase`() {
+    fun `fetchPokemons should collect PagingData from useCase and update uiState`() = runTest {
         // Given
-        val pagingData = PagingData.empty<PokemonModel>()
+        val pokemon = PokemonModel(id = 1, name = "Bulbasaur")
+        val pagingData = PagingData.from(listOf(pokemon))
         every { useCase() } returns flowOf(pagingData)
 
         // When
-        HomeViewModel(useCase)
+        val viewModel = HomeViewModel(useCase)
 
         // Then
         verify { useCase() }
+        assertNotNull(viewModel.uiState.value)
     }
 }
