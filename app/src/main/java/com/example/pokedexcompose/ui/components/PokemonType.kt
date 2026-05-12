@@ -21,17 +21,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.pokedexcompose.R
-import com.example.pokedexcompose.data.local.enums.TypeColoursEnum
 import com.example.pokedexcompose.extensions.color
+import com.example.pokedexcompose.ui.models.PokemonTypeUI
 import java.util.Locale
 
 @Composable
-fun PokemonType(typeColoursEnum: TypeColoursEnum) {
+fun PokemonType(type: PokemonTypeUI) {
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = typeColoursEnum.codColor.color,
+            containerColor = type.color.color,
             contentColor = Color.White
         )
     ) {
@@ -42,18 +42,18 @@ fun PokemonType(typeColoursEnum: TypeColoursEnum) {
             Image(
                 painter = painterResource(
                     id = getDrawableId(
-                        typeName = typeColoursEnum.name,
+                        typeName = type.name,
                         LocalContext.current
                     )
                 ),
-                contentDescription = stringResource(R.string.content_description_type, typeColoursEnum.name),
+                contentDescription = stringResource(R.string.content_description_type, type.name),
                 modifier = Modifier
                     .width(20.dp)
                     .height(20.dp)
             )
 
             Text(
-                text = typeColoursEnum.name.lowercase().replaceFirstChar {
+                text = type.name.lowercase().replaceFirstChar {
                     if (it.isLowerCase())
                         it.titlecase(Locale.getDefault())
                     else
@@ -72,5 +72,5 @@ private fun getDrawableId(typeName: String, context: Context) =
 @Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PokemonTypePreview() {
-    PokemonType(TypeColoursEnum.GROUND)
+    PokemonType(PokemonTypeUI("GROUND", "#E2BF65"))
 }

@@ -49,11 +49,11 @@ import com.example.pokedexcompose.ui.viewmodels.DetailsViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.pokedexcompose.R
-import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
 import com.example.pokedexcompose.extensions.color
 import com.example.pokedexcompose.extensions.titlecase
-import com.example.pokedexcompose.samples.listPokemonEntitySample
 import com.example.pokedexcompose.ui.components.ProgressBarStat
+import com.example.pokedexcompose.ui.models.PokemonTypeUI
+import com.example.pokedexcompose.ui.models.PokemonUI
 import com.example.pokedexcompose.ui.theme.PokedexComposeTheme
 
 @Composable
@@ -66,7 +66,7 @@ fun DetailsScreen(namePokemon: String, viewModel: DetailsViewModel) {
 }
 
 @Composable
-fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
+fun DetailsScreen(pokemon: PokemonUI) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -78,9 +78,11 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
                 .fillMaxWidth()
                 .background(
                     brush = Brush.verticalGradient(
-                        pokemonAndDetail.pokemonDetail.colorTypeList
-                            .map { it.codColor.color }
-                            .plus(Color.Transparent)
+                        if (pokemon.types.isEmpty()) {
+                            listOf(Color.LightGray, Color.Transparent)
+                        } else {
+                            pokemon.types.map { it.color.color } + Color.Transparent
+                        }
                     )
                 )
         ) {
@@ -99,28 +101,26 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = pokemonAndDetail.pokemonEntity.name.titlecase,
+                        text = pokemon.name.titlecase,
                         fontWeight = FontWeight.Bold,
                         fontSize = 23.sp,
                         modifier = Modifier
                             .padding(top = 8.dp)
-                        //.align(Alignment.End)
                     )
 
                     Text(
-                        text = pokemonAndDetail.pokemonEntity.idFormatted,
+                        text = pokemon.idFormatted,
                         fontWeight = FontWeight.Bold,
                         fontSize = 23.sp,
                         modifier = Modifier
                             .padding(top = 8.dp)
-                        //.align(Alignment.End)
                     )
                 }
 
                 Image(
                     painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(pokemonAndDetail.pokemonEntity.imageUrl)
+                            .data(pokemon.imageUrl)
                             .crossfade(true)
                             .build(),
                         error = painterResource(
@@ -132,15 +132,14 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
                     modifier = Modifier
                         .size(250.dp)
                         .align(Alignment.CenterHorizontally),
-                    /*.clip(CircleShape)*/
                     contentScale = ContentScale.Crop,
                 )
             }
         }
 
-        pokemonAndDetail.specieAndEvolutionChain?.pokemonSpeciesEntity?.flavorTextEntries?.flavorText?.let {
+        if (pokemon.description.isNotEmpty()) {
             Text(
-                text = it,
+                text = pokemon.description,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
@@ -162,7 +161,7 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
                     fontWeight = FontWeight.Bold
                 )
 
-                pokemonAndDetail.pokemonDetail.stats.forEach { stats ->
+                pokemon.stats.forEach { stat ->
                     Row(
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
@@ -171,14 +170,14 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
                     ) {
 
                         Text(
-                            text = stats.stat.name.titlecase,
+                            text = stat.name,
                         )
 
                         val widthBar = rememberSaveable { 200 }
 
                         val progressBarStatContentDescription = stringResource(
                             R.string.content_description_progress_bar_stat,
-                            stats.stat.name
+                            stat.name
                         )
                         ProgressBarStat(
                             modifier = Modifier
@@ -189,9 +188,10 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
                                 .height(20.dp)
                                 .width(widthBar.dp)
                                 .background(Color.Gray),
-                            widthOfInnerBar = widthBar,
-                            colorTypeList = pokemonAndDetail.pokemonDetail.colorTypeList,
-                            pokemonDetailStats = stats
+                            widthOfInnerBar = widthBar.dp,
+                            colors = pokemon.types.map { it.color.color },
+                            statValue = stat.value,
+                            progress = stat.progress
                         )
                     }
                 }
@@ -200,14 +200,14 @@ fun DetailsScreen(pokemonAndDetail: PokemonAndDetail) {
             }
         }
 
-        pokemonAndDetail.specieAndEvolutionChain?.evolutionChainEntity?.evolutionList?.let { evolutionList ->
+        if (pokemon.evolutionChain.isNotEmpty()) {
             Row(modifier = Modifier
                 .padding(all = 8.dp)
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                evolutionList.forEach {
+                pokemon.evolutionChain.forEach {
                     Image(
                         painter = rememberAsyncImagePainter(
                             model = ImageRequest.Builder(LocalContext.current)
@@ -238,7 +238,16 @@ fun DetailsScreenPreview() {
     PokedexComposeTheme {
         Surface {
             DetailsScreen(
-                listPokemonEntitySample[5]
+                PokemonUI(
+                    name = "Charizard",
+                    idFormatted = "#006",
+                    description = "A CHARIZARD flies about in search of strong opponents...",
+                    types = listOf(PokemonTypeUI("FIRE", "#EE8130")),
+                    stats = listOf(
+                        com.example.pokedexcompose.ui.models.PokemonStatUI("HP", 78, 0.3f),
+                        com.example.pokedexcompose.ui.models.PokemonStatUI("ATK", 84, 0.33f)
+                    )
+                )
             )
         }
     }

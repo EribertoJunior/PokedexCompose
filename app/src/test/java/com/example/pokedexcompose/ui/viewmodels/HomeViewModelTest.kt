@@ -1,8 +1,8 @@
 package com.example.pokedexcompose.ui.viewmodels
 
 import androidx.paging.PagingData
-import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
-import com.example.pokedexcompose.data.repository.HomeRepository
+import com.example.pokedexcompose.domain.model.PokemonModel
+import com.example.pokedexcompose.domain.usecase.GetPokemonListUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -19,7 +19,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
 
-    private val repository: HomeRepository = mockk()
+    private val useCase: GetPokemonListUseCase = mockk()
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
@@ -33,15 +33,15 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `fetchPokemons should collect PagingData from repository`() {
+    fun `fetchPokemons should collect PagingData from useCase`() {
         // Given
-        val pagingData = PagingData.empty<PokemonAndDetail>()
-        every { repository.getPokemonList() } returns flowOf(pagingData)
+        val pagingData = PagingData.empty<PokemonModel>()
+        every { useCase() } returns flowOf(pagingData)
 
         // When
-        HomeViewModel(repository)
+        HomeViewModel(useCase)
 
         // Then
-        verify { repository.getPokemonList() }
+        verify { useCase() }
     }
 }

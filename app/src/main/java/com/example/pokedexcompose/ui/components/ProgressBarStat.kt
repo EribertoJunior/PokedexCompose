@@ -19,41 +19,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pokedexcompose.data.local.entities.PokemonDetailStats
-import com.example.pokedexcompose.data.local.entities.Stat
-import com.example.pokedexcompose.data.local.enums.TypeColoursEnum
-import com.example.pokedexcompose.extensions.color
 import com.example.pokedexcompose.ui.theme.PokedexComposeTheme
-
-@Composable
-fun ProgressBarStat(
-    modifier: Modifier = Modifier,
-    widthOfInnerBar: Int,
-    colorTypeList: List<TypeColoursEnum>,
-    pokemonDetailStats: PokemonDetailStats
-) {
-
-    ProgressBarStat(
-        modifier = modifier,
-        widthOfInnerBar = widthOfInnerBar.dp,
-        pokemonDetailStats = pokemonDetailStats,
-        colors = if (colorTypeList.size == 1) {
-            listOf(
-                colorTypeList[0].codColor.color,
-                colorTypeList[0].codColor.color
-            )
-        } else {
-            colorTypeList.map { it.codColor.color }
-        }
-    )
-}
 
 @Composable
 fun ProgressBarStat(
     modifier: Modifier = Modifier,
     widthOfInnerBar: Dp,
     colors: List<Color>,
-    pokemonDetailStats: PokemonDetailStats
+    statValue: Int,
+    progress: Float
 ) {
     Box(
         modifier = modifier
@@ -61,15 +35,19 @@ fun ProgressBarStat(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(15.dp))
-                .background(Brush.horizontalGradient(
-                    colors = colors.map {
-                        it
-                    }
-                ))
-                .width(widthOfInnerBar * pokemonDetailStats.baseStat / 100)
+                .background(
+                    Brush.horizontalGradient(
+                        colors = when {
+                            colors.isEmpty() -> listOf(Color.Gray, Color.Gray)
+                            colors.size == 1 -> listOf(colors[0], colors[0])
+                            else -> colors
+                        }
+                    )
+                )
+                .width(widthOfInnerBar * progress)
         ) {
             Text(
-                text = "${pokemonDetailStats.baseStat}",
+                text = "$statValue",
                 modifier = Modifier.align(Alignment.Center),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold
@@ -91,17 +69,11 @@ fun ProgressBarStatPreview() {
                     .width(200.dp)
                     .background(Color.Gray),
                 colors = listOf(
-                    TypeColoursEnum.FIRE.codColor.color,
-                    TypeColoursEnum.DRAGON.codColor.color
+                    Color.Red,
+                    Color.Blue
                 ),
-                pokemonDetailStats = PokemonDetailStats(
-                    baseStat = 90,
-                    effort = 2,
-                    stat = Stat(
-                        name = "HP",
-                        url = ""
-                    )
-                ),
+                statValue = 90,
+                progress = 0.5f,
                 widthOfInnerBar = 200.dp
             )
         }

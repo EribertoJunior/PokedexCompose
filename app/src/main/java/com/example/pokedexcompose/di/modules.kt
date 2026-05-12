@@ -12,6 +12,8 @@ import com.example.pokedexcompose.data.repository.DetailRepositoryImpl
 import com.example.pokedexcompose.data.repository.HomeRepository
 import com.example.pokedexcompose.data.repository.HomeRepositoryImpl
 import com.example.pokedexcompose.data.repository.PokemonRemoteMediator
+import com.example.pokedexcompose.domain.usecase.GetPokemonDetailsUseCase
+import com.example.pokedexcompose.domain.usecase.GetPokemonListUseCase
 import com.example.pokedexcompose.ui.viewmodels.DetailsViewModel
 import com.example.pokedexcompose.ui.viewmodels.HomeViewModel
 import org.koin.android.ext.koin.androidContext
@@ -65,6 +67,9 @@ val modules = module {
         )
     }
 
-    viewModel { HomeViewModel(repository = get()) }
-    viewModel { DetailsViewModel(detailRepository = get()) }
+    factory { GetPokemonListUseCase(repository = get()) }
+    factory { GetPokemonDetailsUseCase(repository = get()) }
+
+    viewModel { HomeViewModel(getPokemonListUseCase = get()) }
+    viewModel { DetailsViewModel(getPokemonDetailsUseCase = get()) }
 }

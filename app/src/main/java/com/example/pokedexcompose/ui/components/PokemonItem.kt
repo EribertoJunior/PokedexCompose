@@ -35,27 +35,19 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.pokedexcompose.R
-import com.example.pokedexcompose.data.local.entities.Home
-import com.example.pokedexcompose.data.local.entities.OfficialArtwork
-import com.example.pokedexcompose.data.local.entities.Other
-import com.example.pokedexcompose.data.local.entities.PokemonEntity
-import com.example.pokedexcompose.data.local.entities.PokemonDetail
-import com.example.pokedexcompose.data.local.entities.PokemonDetailSpecies
-import com.example.pokedexcompose.data.local.entities.Sprites
-import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
-import com.example.pokedexcompose.data.local.enums.TypeColoursEnum
 import com.example.pokedexcompose.extensions.color
 import com.example.pokedexcompose.extensions.titlecase
-import com.example.pokedexcompose.extensions.toDoubleFormat
+import com.example.pokedexcompose.ui.models.PokemonTypeUI
+import com.example.pokedexcompose.ui.models.PokemonUI
 import com.example.pokedexcompose.ui.theme.PokedexComposeTheme
 
 @Composable
 fun PokemonItem(
-    pokemonAndDetail: PokemonAndDetail,
-    onClickPokemon: (PokemonAndDetail) -> Unit = {}
+    pokemon: PokemonUI,
+    onClickPokemon: (PokemonUI) -> Unit = {}
 ) {
     Card(
-        modifier = Modifier.clickable { onClickPokemon(pokemonAndDetail) },
+        modifier = Modifier.clickable { onClickPokemon(pokemon) },
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
@@ -70,9 +62,11 @@ fun PokemonItem(
                     .fillMaxWidth(0.5f)
                     .background(
                         brush = Brush.horizontalGradient(
-                            pokemonAndDetail.pokemonDetail.colorTypeList
-                                .map { it.codColor.color }
-                                .plus(Color.Transparent)
+                            if (pokemon.types.isEmpty()) {
+                                listOf(Color.LightGray, Color.Transparent)
+                            } else {
+                                pokemon.types.map { it.color.color } + Color.Transparent
+                            }
                         )
                     )
             ) {
@@ -80,7 +74,7 @@ fun PokemonItem(
                     Image(
                         painter = rememberAsyncImagePainter(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data(pokemonAndDetail.pokemonEntity.imageUrl)
+                                .data(pokemon.imageUrl)
                                 .crossfade(true)
                                 .build(),
                             error = painterResource(
@@ -90,7 +84,7 @@ fun PokemonItem(
                         ),
                         contentDescription = stringResource(
                             R.string.pokemon_image_content_description,
-                            pokemonAndDetail.pokemonEntity.name
+                            pokemon.name
                         ),
                         modifier = Modifier
                             .size(130.dp)
@@ -98,7 +92,7 @@ fun PokemonItem(
                         contentScale = ContentScale.Crop,
                     )
                     Text(
-                        text = pokemonAndDetail.pokemonEntity.idFormatted,
+                        text = pokemon.idFormatted,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
                             .padding(top = 8.dp)
@@ -112,7 +106,7 @@ fun PokemonItem(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = pokemonAndDetail.pokemonEntity.name.titlecase,
+                    text = pokemon.name.titlecase,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -130,7 +124,7 @@ fun PokemonItem(
                         alignment = CenterHorizontally
                     )
                 ) {
-                    pokemonAndDetail.pokemonDetail.colorTypeList.forEach {
+                    pokemon.types.forEach {
                         PokemonType(it)
                     }
                 }
@@ -142,21 +136,13 @@ fun PokemonItem(
                         .align(CenterHorizontally)
                 ) {
                     PokemonMeasure(
-                        formattedMeasure = "${
-                            pokemonAndDetail.pokemonDetail.weight.toDoubleFormat(
-                                2
-                            )
-                        } kg",
+                        formattedMeasure = pokemon.weight,
                         iconId = R.drawable.weight_kilogram,
                         iconDescription = R.string.weight,
                         iconContentDescription = R.string.pokemon_weight_image_description
                     )
                     PokemonMeasure(
-                        formattedMeasure = "${
-                            pokemonAndDetail.pokemonDetail.height.toDoubleFormat(
-                                2
-                            )
-                        } m",
+                        formattedMeasure = pokemon.height,
                         iconId = R.drawable.ruler_square,
                         iconDescription = R.string.height,
                         iconContentDescription = R.string.pokemon_height_image_description
@@ -174,31 +160,16 @@ fun PokemonItemPreview() {
     PokedexComposeTheme {
         Surface {
             PokemonItem(
-                PokemonAndDetail(
-                    pokemonEntity = PokemonEntity(
-                        pokemonId = 10,
-                        name = "Teste",
-                        imageUrl = ""
+                PokemonUI(
+                    idFormatted = "#010",
+                    name = "Teste",
+                    imageUrl = "",
+                    types = listOf(
+                        PokemonTypeUI("DRAGON", "#6F35FC"),
+                        PokemonTypeUI("FIGHTING", "#C22E28")
                     ),
-                    pokemonDetail = PokemonDetail(
-                        colorTypeList = listOf(
-                            TypeColoursEnum.DRAGON,
-                            TypeColoursEnum.FIGHTING
-                        ),
-                        sprites = Sprites(
-                            Other(
-                                officialArtwork = OfficialArtwork(""),
-                                home = Home("")
-                            )
-                        ),
-                        weight = 238,
-                        height = 13,
-                        stats = emptyList(),
-                        species = PokemonDetailSpecies(
-                            name = "",
-                            url = ""
-                        )
-                    ),
+                    weight = "23.8 kg",
+                    height = "1.3 m"
                 )
             )
         }

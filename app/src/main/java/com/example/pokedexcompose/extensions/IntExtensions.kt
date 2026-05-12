@@ -1,5 +1,7 @@
 package com.example.pokedexcompose.extensions
 
-fun Int.toDoubleFormat(decimals: Int):String {
-    return (this.toDouble()/10).toString().format("%.${decimals}f", this)
+import java.util.Locale
+
+fun Int.toDoubleFormat(decimals: Int): String {
+    return String.format(Locale.US, "%.${decimals}f", this.toDouble() / 10)
 }

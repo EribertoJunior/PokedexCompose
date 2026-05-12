@@ -1,9 +1,7 @@
 package com.example.pokedexcompose.ui.viewmodels
 
-import com.example.pokedexcompose.data.local.entities.PokemonEntity
-import com.example.pokedexcompose.data.local.entities.PokemonDetail
-import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
-import com.example.pokedexcompose.data.repository.DetailRepository
+import com.example.pokedexcompose.domain.model.PokemonModel
+import com.example.pokedexcompose.domain.usecase.GetPokemonDetailsUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -22,14 +20,14 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class DetailsViewModelTest {
 
-    private val repository = mockk<DetailRepository>()
+    private val useCase = mockk<GetPokemonDetailsUseCase>()
     private lateinit var viewModel: DetailsViewModel
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = DetailsViewModel(repository)
+        viewModel = DetailsViewModel(useCase)
     }
 
     @After
@@ -38,22 +36,23 @@ class DetailsViewModelTest {
     }
 
     @Test
-    fun `searchEvolutionChain should update uiState with data from repository`() = runTest {
+    fun `searchEvolutionChain should update uiState with data from useCase`() = runTest {
         // Given
         val pokemonName = "Bulbasaur"
-        val expectedPokemon = PokemonAndDetail(
-            pokemonEntity = PokemonEntity(name = pokemonName),
-            pokemonDetail = PokemonDetail(),
-            specieAndEvolutionChain = null
+        val expectedPokemon = PokemonModel(
+            id = 1,
+            name = pokemonName,
+            imageUrl = "url"
         )
         
-        coEvery { repository.searchPokemonByName(pokemonName) } returns flowOf(expectedPokemon)
+        coEvery { useCase(pokemonName) } returns flowOf(expectedPokemon)
 
         // When
         viewModel.searchEvolutionChain(pokemonName)
         advanceUntilIdle()
 
         // Then
-        assertEquals(expectedPokemon, viewModel.uiState.value)
+        assertEquals(pokemonName, viewModel.uiState.value.name)
+        assertEquals("#001", viewModel.uiState.value.idFormatted)
     }
 }
