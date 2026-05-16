@@ -1,19 +1,19 @@
 package com.example.pokedexcompose.data.repository
 
-import androidx.core.net.toUri
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import com.example.pokedexcompose.data.local.entities.PokemonEntity
-import com.example.pokedexcompose.data.local.entities.PokemonDetail
-import com.example.pokedexcompose.data.local.entities.PokemonRemoteKeyEntity
-import com.example.pokedexcompose.data.local.entities.PokemonSpeciesEntity
 import com.example.pokedexcompose.data.dataSource.local.LocalDataSource
 import com.example.pokedexcompose.data.dataSource.remote.RemoteDataSource
+import com.example.pokedexcompose.data.local.entities.PokemonDetail
+import com.example.pokedexcompose.data.local.entities.PokemonEntity
+import com.example.pokedexcompose.data.local.entities.PokemonRemoteKeyEntity
+import com.example.pokedexcompose.data.local.entities.PokemonSpeciesEntity
 import com.example.pokedexcompose.data.local.relations.PokemonAndDetail
 import com.example.pokedexcompose.data.network.model.PokemonDetailRemote
 import com.example.pokedexcompose.data.network.model.PokemonRemote
+import com.example.pokedexcompose.extensions.getOffsetFromUrl
 import com.example.pokedexcompose.extensions.getUrlId
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
@@ -57,8 +57,8 @@ class PokemonRemoteMediator(
                 val response = remoteDataSource.getListPokemon(limit = PAGE_SIZE, offset = offSet)
                 val pokemonList = response.results
                 val endOfPaginationReached = pokemonList.isEmpty()
-                val prevKey = getOffsetParameter(response.previous)
-                val nextKey = getOffsetParameter(response.next)
+                val prevKey = response.previous?.getOffsetFromUrl()
+                val nextKey = response.next?.getOffsetFromUrl()
 
                 val results = coroutineScope {
                     pokemonList.map { pokemon ->
@@ -169,12 +169,6 @@ class PokemonRemoteMediator(
             ?.let { pokemonAndDetail ->
                 localDataSource.getPokemonRemoteKeyByName(pokemonAndDetail.pokemonEntity.name)
             }
-    }
-
-    fun getOffsetParameter(url: String?): Int? {
-        return url?.let {
-            url.toUri().getQueryParameter("offset")?.toInt()
-        }
     }
 
     private data class PokemonFullData(

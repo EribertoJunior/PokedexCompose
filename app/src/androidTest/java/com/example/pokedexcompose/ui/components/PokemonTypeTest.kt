@@ -3,25 +3,28 @@ package com.example.pokedexcompose.ui.components
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import com.example.pokedexcompose.ui.models.PokemonTypeUI
 import com.example.pokedexcompose.ui.theme.PokedexComposeTheme
 import org.junit.Rule
 import org.junit.Test
 
-class LoadingItemTest {
+class PokemonTypeTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
 
     @Test
-    fun loadingItem_shouldDisplayWithCorrectContentDescription() {
+    fun pokemonType_shouldDisplayTypeNameAndDescription() {
+        val typeUI = PokemonTypeUI("FIRE", "#EE8130")
+        
         composeTestRule.setContent {
             PokedexComposeTheme {
-                LoadingItem()
+                PokemonType(type = typeUI)
             }
         }
 
-        composeTestRule
-            .onNodeWithContentDescription("Carregando pokémons")
-            .assertIsDisplayed()
+        composeTestRule.onNodeWithText("Fire").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Tipo FIRE").assertIsDisplayed()
     }
 }

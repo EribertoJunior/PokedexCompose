@@ -81,17 +81,18 @@ dependencies {
 
 kover {
     reports {
-        total {
+        variant("debug") {
             filters {
                 excludes {
+                    packages(
+                        "com.example.pokedexcompose.ui",
+                        "com.example.pokedexcompose.di",
+                        "com.example.pokedexcompose.samples"
+                    )
                     classes(
                         "*.BuildConfig",
-                        "*.*_Impl*", // Room generated
-                        "*.MyApplication",
-                        "*.di.*",
-                        "*.ui.theme.*",
-                        "*.*Fragment*",
-                        "*.*Activity*"
+                        "*.*_Impl*",
+                        "*.MyApplication"
                     )
                 }
             }

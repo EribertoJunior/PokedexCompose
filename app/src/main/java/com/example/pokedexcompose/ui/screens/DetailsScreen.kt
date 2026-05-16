@@ -38,8 +38,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -147,6 +147,26 @@ fun DetailsScreen(pokemon: PokemonUI) {
             )
         }
 
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            com.example.pokedexcompose.ui.components.PokemonMeasure(
+                formattedMeasure = pokemon.weight,
+                iconId = R.drawable.weight_kilogram,
+                iconDescription = R.string.weight,
+                iconContentDescription = R.string.pokemon_weight_image_description
+            )
+            com.example.pokedexcompose.ui.components.PokemonMeasure(
+                formattedMeasure = pokemon.height,
+                iconId = R.drawable.ruler_square,
+                iconDescription = R.string.height,
+                iconContentDescription = R.string.pokemon_height_image_description
+            )
+        }
+
         Card(
             modifier = Modifier
                 .padding(all = 8.dp)
@@ -181,12 +201,12 @@ fun DetailsScreen(pokemon: PokemonUI) {
                         )
                         ProgressBarStat(
                             modifier = Modifier
-                                .clearAndSetSemantics {
+                                .height(20.dp)
+                                .width(widthBar.dp)
+                                .semantics {
                                     contentDescription = progressBarStatContentDescription
                                 }
                                 .clip(RoundedCornerShape(15.dp))
-                                .height(20.dp)
-                                .width(widthBar.dp)
                                 .background(Color.Gray),
                             widthOfInnerBar = widthBar.dp,
                             colors = pokemon.types.map { it.color.color },

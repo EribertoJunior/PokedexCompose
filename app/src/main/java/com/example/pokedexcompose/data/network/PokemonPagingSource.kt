@@ -1,9 +1,9 @@
 package com.example.pokedexcompose.data.network
 
-import android.net.Uri
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.pokedexcompose.data.network.model.PokemonRemote
+import com.example.pokedexcompose.extensions.getOffsetFromUrl
 import java.lang.Exception
 
 class PokemonPagingSource(private val pokeService: PokemonService) : PagingSource<Int, PokemonRemote>() {
@@ -14,19 +14,13 @@ class PokemonPagingSource(private val pokeService: PokemonService) : PagingSourc
 
             val offset = params.key ?: PRIMEIRO_DESLOCAMENTO_OFFSET
             val response = pokeService.getListPokemon(offset = offset)
-            val nextOffset = getOffsetParameter(response.next)
-            val prevOffset = getOffsetParameter(response.previous)
+            val nextOffset = response.next?.getOffsetFromUrl()
+            val prevOffset = response.previous?.getOffsetFromUrl()
 
 
             LoadResult.Page(data = response.results, nextKey = nextOffset, prevKey = prevOffset)
         } catch (e: Exception) {
             LoadResult.Error(e)
-        }
-    }
-
-    private fun getOffsetParameter(url: String?): Int? {
-        return url?.let {
-            Uri.parse(url).getQueryParameter("offset")?.toInt()
         }
     }
 

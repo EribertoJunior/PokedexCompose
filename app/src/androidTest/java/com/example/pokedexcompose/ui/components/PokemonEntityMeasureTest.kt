@@ -1,15 +1,13 @@
 package com.example.pokedexcompose.ui.components
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.printToLog
 import com.example.pokedexcompose.R
-import com.example.pokedexcompose.extensions.toDoubleFormat
+import com.example.pokedexcompose.ui.theme.PokedexComposeTheme
 import org.junit.Rule
 import org.junit.Test
-
 
 class PokemonEntityMeasureTest {
 
@@ -17,38 +15,37 @@ class PokemonEntityMeasureTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun pokemonMeasureTest() {
+    fun pokemonMeasure_shouldDisplayFormattedValueAndLabel() {
         composeTestRule.setContent {
-            PokemonMeasure(
-                formattedMeasure = 253.toDoubleFormat(2),
-                iconId = R.drawable.ruler_square,
-                iconDescription = R.string.height,
-                iconContentDescription = R.string.pokemon_height_image_description
-            )
+            PokedexComposeTheme {
+                PokemonMeasure(
+                    formattedMeasure = "25.30 m",
+                    iconId = R.drawable.ruler_square,
+                    iconDescription = R.string.height,
+                    iconContentDescription = R.string.pokemon_height_image_description
+                )
+            }
         }
 
-        composeTestRule.onRoot(useUnmergedTree = true).printToLog("measureTest")
-
-        composeTestRule
-            .onNodeWithText("Altura")
-            .assertExists()
+        composeTestRule.onNodeWithText("25.30 m").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Altura").assertIsDisplayed()
     }
 
     @Test
-    fun pokemonMeasureTest_contentDescriptionExist() {
+    fun pokemonMeasure_shouldHaveCorrectContentDescription() {
         composeTestRule.setContent {
-            PokemonMeasure(
-                formattedMeasure = 253.toDoubleFormat(2),
-                iconId = R.drawable.ruler_square,
-                iconDescription = R.string.height,
-                iconContentDescription = R.string.pokemon_height_image_description
-            )
+            PokedexComposeTheme {
+                PokemonMeasure(
+                    formattedMeasure = "25.30 m",
+                    iconId = R.drawable.ruler_square,
+                    iconDescription = R.string.height,
+                    iconContentDescription = R.string.pokemon_height_image_description
+                )
+            }
         }
-
-        composeTestRule.onRoot(useUnmergedTree = true).printToLog("measureTest")
 
         composeTestRule
             .onNodeWithContentDescription("Altura em metros")
-            .assertExists()
+            .assertIsDisplayed()
     }
 }
