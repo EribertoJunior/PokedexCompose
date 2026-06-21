@@ -106,3 +106,10 @@ kover {
         }
     }
 }
+
+tasks.register("runKover") {
+    group = "verification"
+    description = "Roda os testes, exibe a cobertura no log e gera o relatório HTML."
+
+    dependsOn("koverLogDebug", "koverHtmlReportDebug")
+}
