@@ -35,4 +35,39 @@ class PokemonUIMapperTest {
         assertEquals(45, ui.stats[0].value)
         assertEquals(45 / 255f, ui.stats[0].progress, 0.001f)
     }
+
+    @Test
+    fun `toUI should turn the PokeAPI flavor text into a single-spaced paragraph`() {
+        // Given: texto real de pokemon-species/1 (versão red), com \n e \u000c (form feed)
+        val model = PokemonModel(
+            id = 1,
+            name = "bulbasaur",
+            description = "A strange seed was\nplanted on its\nback at birth.\u000cThe plant sprouts\nand grows with\nthis POKéMON."
+        )
+
+        // When
+        val ui = model.toUI()
+
+        // Then
+        assertEquals(
+            "A strange seed was planted on its back at birth. The plant sprouts and grows with this POKéMON.",
+            ui.description
+        )
+    }
+
+    @Test
+    fun `toUI should collapse whitespace runs and trim the description`() {
+        // Given
+        val model = PokemonModel(
+            id = 6,
+            name = "charizard",
+            description = "  It breathes\r\nflames.\tHowever,  \nit will\u000c\u000cnever torch a weaker foe.\n"
+        )
+
+        // When
+        val ui = model.toUI()
+
+        // Then
+        assertEquals("It breathes flames. However, it will never torch a weaker foe.", ui.description)
+    }
 }
