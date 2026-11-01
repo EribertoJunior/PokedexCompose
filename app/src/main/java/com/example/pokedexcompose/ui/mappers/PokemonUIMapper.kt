@@ -21,7 +21,7 @@ fun PokemonModel.toUI(): PokemonUI {
         weight = "${this.weight.toDoubleFormat(2)} kg",
         height = "${this.height.toDoubleFormat(2)} m",
         idFormatted = formatId(this.id),
-        description = this.description.replace("\n", " "),
+        description = this.description.replace(Regex("\\s+"), " ").trim(),
         stats = this.stats.map {
             PokemonStatUI(
                 name = parseStatName(it.name),
