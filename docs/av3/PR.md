@@ -1,7 +1,11 @@
 # fix: descrição do Pokémon com caracteres de controle (`\f`)
 
 ## Intenção
-A tela de detalhes mostra o flavor text da PokeAPI. Esse texto separa linhas com `\n` e frases com `\f` (form feed). `PokemonUIMapper.toUI()` só trocava o `\n`, então o `\f` chegava à UI. Exemplo real, `GET https://pokeapi.co/api/v2/pokemon-species/1/`, primeira entrada `en` (versão red):
+A tela de detalhes mostra o flavor text da PokeAPI. Esse texto separa linhas com `\n` e frases com `\f` (form feed). `PokemonUIMapper.toUI()` só trocava o `\n`, então o `\f` chegava intacto a `PokemonUI.description`.
+
+**Impacto na tela: não demonstrado.** No emulador, os detalhes do Bulbasaur não mostraram diferença visível entre `master` e esta branch, porque o Compose não exibiu o `\f`. Uma versão anterior desta descrição dizia o contrário, e foi corrigida após essa verificação. A mudança garante o contrato do texto no modelo de UI (parágrafo com espaço simples, sem bordas) sem depender de como o renderizador trata caracteres de controle.
+
+Exemplo real, `GET https://pokeapi.co/api/v2/pokemon-species/1/`, primeira entrada `en` (versão red):
 
 ```
 'A strange seed was\nplanted on its\nback at birth.\x0cThe plant sprouts\nand grows with\nthis POKéMON.'
@@ -15,10 +19,11 @@ A tela de detalhes mostra o flavor text da PokeAPI. Esse texto separa linhas com
 - **Pronto quando:** teste novo vermelho antes e verde depois, mais a sabotagem.
 - **Pare e pergunte:** dados ou banco, soft hyphen, dependências.
 
-Barreira executada: `git diff --stat master...HEAD` mostra 4 arquivos, todos no "pode tocar":
+Barreira executada: `git diff --stat master...HEAD` mostra 5 arquivos, todos no "pode tocar". O código de produção é só a 1ª linha:
 ```
  .../pokedexcompose/ui/mappers/PokemonUIMapper.kt   |  2 +-
  .../ui/mappers/PokemonUIMapperTest.kt              | 35 ++++++++++++++
+ docs/av3/PR.md                                     | (esta descrição)
  docs/av3/escopo.md                                 | 12 +++++
  docs/av3/mutacao_desc.py                           | 55 ++++++++++++++++++++++
 ```
@@ -30,7 +35,7 @@ Barreira executada: `git diff --stat master...HEAD` mostra 4 arquivos, todos no 
 4. Rodar a suíte inteira e o Kover.
 5. Sabotagem e mutação manual.
 
-Cortado do plano: tratar o soft hyphen (`­`) e normalizar o texto já na camada de dados. Os dois mudariam o banco ou outro mapper, o que está fora do escopo.
+Cortado do plano: tratar o soft hyphen (`\u00ad`) e normalizar o texto já na camada de dados. Os dois mudariam o banco ou outro mapper, o que está fora do escopo.
 
 ## Commits (atômicos)
 | Commit | Conteúdo |
@@ -39,6 +44,8 @@ Cortado do plano: tratar o soft hyphen (`­`) e normalizar o texto já na camada
 | `e404be8` | 2 testes novos (falham sem a correção) |
 | `b8cdbf6` | correção (1 linha) |
 | `d9cf7f3` | script de mutação reproduzível |
+| `19c7f34` | esta descrição |
+| (seguinte) | correção da intenção após a verificação no emulador; atualização desta tabela e da barreira |
 
 ## Verificação
 | Etapa | Comando | Saída |
@@ -82,6 +89,6 @@ Nenhuma. `Regex` e `trim` são da stdlib do Kotlin, e `libs.versions.toml` e `bu
 **Alternativa comparada:** agente com aprovação manual de cada edição (o modo A da minha AV1.1). Nela, a T1 levou 9 min e 6 idas e vindas, contra 3 min e 1 ida e volta no modo com revisão no fim (n=1, com efeito de ordem). Aprovar edição por edição só se paga sem oráculo automático ou com raio maior que um arquivo, e nenhuma das duas condições vale aqui. O que eu precisava controlar era o **escopo**: na AV1.2, declará-lo antes reduziu as idas e vindas de 12 para 5. Por isso o escopo veio no primeiro commit, antes do código.
 
 ## Limites
-- Verificado só na camada de UI (teste JVM). Não abri o app num emulador para ver o `\f` renderizado.
+- Verificação automatizada só na camada de UI (teste JVM). No emulador não houve diferença visível antes e depois (sem print), então o ganho na tela não está demonstrado.
 - O texto no banco continua bruto.
 - O soft hyphen e outros caracteres Unicode invisíveis que não são espaço em branco ficam fora do escopo.
